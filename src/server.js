@@ -17,7 +17,6 @@ async function bootstrap() {
     await RedisClient.connect();
     await mongoose.connect(config.database_url);
     logger.info(`🛢 Database is connected successfully`);
-
     server = app.listen(config.port, () => {
       logger.info(`Application  listening on port ${config.port}`);
     });
@@ -38,17 +37,6 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-// RedisClient.redisClient.on('connect', () => {
-//   client.psubscribe('events.*', (err, pattern, channels) => {
-//     if (err) {
-//       console.error('Error getting channels:', err);
-//       return;
-//     }
-
-//     console.log('Channels:', channels);
-//   });
-// });
 
 process.on("SIGTERM", () => {
   logger.info("SIGTERM is received");
