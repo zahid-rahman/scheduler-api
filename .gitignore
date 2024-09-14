@@ -1,3 +1,4 @@
 redis.conf
 node_modules
 scheduler_db
+.env
