@@ -1,0 +1,25 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/zahid/Workspace/fullstack/scheduler/api/logs/winston/errors/.10ddd6de78925ccd7a3aa36faa44a3a1ee672c05-audit.json",
+    "files": [
+        {
+            "date": 1726322920424,
+            "name": "/Users/zahid/Workspace/fullstack/scheduler/api/logs/winston/errors/phu-2024-14-09-20-error.log",
+            "hash": "ce1e1978a65092e61974cefdbb32414d004758d036aabaaa22d12f2b11310884"
+        },
+        {
+            "date": 1726326009513,
+            "name": "/Users/zahid/Workspace/fullstack/scheduler/api/logs/winston/errors/phu-2024-14-09-21-error.log",
+            "hash": "483c4d5ca2e60bb04753f270d0e95e1cc68213dba787684137842ef3503dcf0d"
+        },
+        {
+            "date": 1726334272875,
+            "name": "/Users/zahid/Workspace/fullstack/scheduler/api/logs/winston/errors/phu-2024-14-09-23-error.log",
+            "hash": "2918d59b4181d416c43a281eb787fadebde73bc2e8ea040e5618888cf876ec46"
+        }
+    ],
+    "hashType": "sha256"
+}

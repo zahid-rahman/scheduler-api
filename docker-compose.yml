@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  mongodb:
+    image: mongo:latest
+    hostname: localhost
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=zahid
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+    restart: on-failure
+    ports:
+      - 27017:27017
+    volumes:
+      - ./scheduler_db:/data/db
+  redis:
+    image: redis:latest
+    container_name: scheduler_redis
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "123456"
+    volumes:
+      - redis:/var/lib/redis/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  redis:
+    driver: local
