@@ -10,4 +10,5 @@ export default {
   database_url: process.env.DATABASE_URL,
   redis_uri: process.env.REDIS_URI,
   redis_port: process.env.REDIS_PORT,
+  redis_host: process.env.REDIS_HOST,
 };
