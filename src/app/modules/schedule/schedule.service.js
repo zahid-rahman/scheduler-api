@@ -2,7 +2,6 @@ import ApiError from "../../../errors/ApiError.js";
 import { eventSchedulerQueue } from "../../../scheduler/worker.js";
 import { RedisClient } from "../../../shared/redis.js";
 import { Schedule } from "./schedule.model.js";
-import { isValid, parseISO } from "date-fns";
 async function getAllSchedules() {
   const result = await Schedule.find({});
   return result;
@@ -16,23 +15,26 @@ async function createSchedule(body) {
 
   const { startDate, startTime } = body;
   const scheduledDateTime = new Date(`${startDate}T${startTime}`);
-  const currentDate = new Date()
-  console.log("scheduled date time", scheduledDateTime);
-
-
+  const currentDate = new Date();
   const delayInMilliseconds = scheduledDateTime - currentDate;
-  // console.log("Scheduling in milliseconds:", delayInMilliseconds);
-  // console.log('ms',delayInMilliseconds)
-  // console.log('converted date', new Date(delayInMilliseconds).toLocaleString())
   if (delayInMilliseconds < 0) {
     throw new ApiError(400, "Scheduled time must be in the future");
   }
 
   await eventSchedulerQueue.add(
     `event_schedule_${createdSchedule._id}`,
-    { scheduleId: createdSchedule._id, title: createdSchedule.title },
     {
-      delay: delayInMilliseconds, // Set the delay in milliseconds
+      scheduleId: createdSchedule._id,
+      title: createdSchedule.title,
+      email: createdSchedule.sendTo,
+      text: createdSchedule.title,
+      html: `
+          <h1>Welcome to meeting</h1> <br />
+          <p>${createdSchedule.description}</p>
+      `,
+    },
+    {
+      delay: delayInMilliseconds,
     }
   );
 

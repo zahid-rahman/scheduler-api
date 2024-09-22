@@ -11,4 +11,6 @@ export default {
   redis_uri: process.env.REDIS_URI,
   redis_port: process.env.REDIS_PORT,
   redis_host: process.env.REDIS_HOST,
+  emailAddress: process.env.EMAIL_ID,
+  emailPass: process.env.EMAIL_PASS
 };
