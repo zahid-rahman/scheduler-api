@@ -3,6 +3,9 @@ import catchAsync from "../../../shared/catchAsync.js";
 import sendResponse from "../../../shared/sendResponse.js";
 import { userService } from "./user.service.js";
 import { RedisClient } from "../../../shared/redis.js";
+import sanitize, { areObjectsEqual } from "../../../shared/sanitize.js";
+import { paginationFields } from "../../../constant/pagination.js";
+import { userSearchableFields } from "./user.constant.js";
 const redis = RedisClient.redisClient;
 const createUser = catchAsync(async (req, res, next) => {
   try {
@@ -21,21 +24,38 @@ const createUser = catchAsync(async (req, res, next) => {
 });
 const getAllUsers = catchAsync(async (req, res, next) => {
   try {
-    const result = await userService.getAllUsers();
+    const filters = sanitize(req.query, userSearchableFields);
+    const paginationOptions = sanitize(req.query, paginationFields);
+    const result = await userService.getAllUsers(filters, paginationOptions);
+    const cachedFilters = await redis.get("user:filter");
+    const isFound = areObjectsEqual(
+      filters,
+      cachedFilters === null ? {} : JSON.parse(cachedFilters)
+    );
+
+    if (!isFound) {
+      /** if filter options changes then invalidate cache data */
+      await redis.del("users");
+      await redis.del("user:filter");
+    }
+
     /**
      * fetching the cache data
      */
     const cachedRecord = await redis.get("users");
-    console.log("cached data:", cachedRecord);
+    // console.log("cached data:", cachedRecord);
     if (cachedRecord) {
       return sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "users fetched successfully!",
-        data: JSON.parse(cachedRecord),
+        meta: JSON.parse(cachedRecord).meta,
+        data: JSON.parse(cachedRecord).data,
       });
     }
+
     /** store the data if not cached in redis */
+    await redis.set("user:filter", JSON.stringify(filters), "EX", 120, "NX");
     await redis.set("users", JSON.stringify(result), "EX", 120, "NX");
 
     /** this is only for learning purpose to delay the request. It can be the execution time of the query */
@@ -46,7 +66,8 @@ const getAllUsers = catchAsync(async (req, res, next) => {
           statusCode: httpStatus.OK,
           success: true,
           message: "users fetched successfully!",
-          data: result,
+          meta: result.meta,
+          data: result.data,
         });
         /**
          * storing information in redis for caching
